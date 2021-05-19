@@ -67,6 +67,11 @@ app.use(async (req, res, next) => {
           .send(buffer)
         break
 
+      case 'source':
+        const source = await renderer.source(url, options)  
+        res.status(200).send(source)
+        break
+        
       default:
         const html = await renderer.html(url, options)
         res.status(200).send(html)

@@ -74,6 +74,18 @@ class Renderer {
     }
   }
 
+  async source(url, options = {}) {
+    let page = null
+    try {
+      const { timeout, waitUntil, credentials, headers } = options
+      page = await this.createPage(url, { timeout, waitUntil, credentials, headers })
+      const source = await page.response.text()
+      return source
+    } finally {
+      this.closePage(page)
+    }
+  }
+
   async pdf(url, options = {}) {
     let page = null
     try {
@@ -136,6 +148,7 @@ class Renderer {
     }
     
     await page.setCacheEnabled(false)
+    await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36")
 
     page.on('error', async error => {
       console.error(error)
