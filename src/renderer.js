@@ -78,8 +78,8 @@ class Renderer {
     let page = null
     try {
       const { timeout, waitUntil, credentials, headers } = options
-      page = await this.createPage(url, { timeout, waitUntil, credentials, headers })
-      const source = await page.response.text()
+      response = await this.createPage(url, { timeout, waitUntil, credentials, headers }, true)
+      const source = await response.text()
       return source
     } finally {
       this.closePage(page)
@@ -139,7 +139,7 @@ class Renderer {
     }
   }
 
-  async createPage(url, options = {}) {
+  async createPage(url, options = {}, onlyResponse = false) {
     const { timeout, waitUntil, credentials, emulateMediaType, headers } = await pageSchema.validate(options)
     const page = await this.browser.newPage()
 
@@ -162,8 +162,9 @@ class Renderer {
     if (credentials) {
       await page.authenticate(credentials)
     }
-
-    await page.goto(url, { timeout, waitUntil })
+    if (onlyResponse){
+      return await page.goto(url, { timeout, waitUntil })
+    }
     return page
   }
 
