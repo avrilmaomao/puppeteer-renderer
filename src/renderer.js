@@ -78,7 +78,7 @@ class Renderer {
     let page = null
     try {
       const { timeout, waitUntil, credentials, headers } = options
-      response = await this.createPage(url, { timeout, waitUntil, credentials, headers }, true)
+      let response = await this.createPage(url, { timeout, waitUntil, credentials, headers }, true)
       const source = await response.text()
       return source
     } finally {
