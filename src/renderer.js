@@ -65,12 +65,15 @@ class Renderer {
   async html(url, options = {}) {
     let page = null
     try {
+      console.log("start render url:", url, options)
       const { timeout, waitUntil, credentials, headers } = options
       page = await this.createPage(url, { timeout, waitUntil, credentials, headers })
       const html = await page.content()
+      console.log("finish rendering url:", url)
       return html
     } finally {
       this.closePage(page)
+      console.log("close page:", url)
     }
   }
 
@@ -98,7 +101,7 @@ class Renderer {
         emulateMediaType: emulateMediaType || 'print',
       })
       const pdfOptions = await pdfSchema.validate(extraOptions)
-      
+
       const buffer = await page.pdf(pdfOptions)
       return buffer
     } finally {
@@ -141,12 +144,13 @@ class Renderer {
 
   async createPage(url, options = {}, onlyResponse = false) {
     const { timeout, waitUntil, credentials, emulateMediaType, headers } = await pageSchema.validate(options)
+    console.log("page options",timeout, waitUntil)
     const page = await this.browser.newPage()
 
     if (headers) {
       await page.setExtraHTTPHeaders(JSON.parse(headers))
     }
-    
+
     await page.setCacheEnabled(false)
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36")
 
@@ -164,6 +168,8 @@ class Renderer {
     }
     if (onlyResponse){
       return await page.goto(url, { timeout, waitUntil })
+    }else{
+      await page.goto(url, { timeout, waitUntil })
     }
     return page
   }
